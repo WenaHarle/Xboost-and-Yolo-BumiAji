@@ -1,37 +1,24 @@
-
-
-
 import cv2
 import numpy as np
 
 def segment(frame):
-    # Convert the frame to grayscale
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # Convert the frame to HSV color space
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    # Define the intensity range for the color #e0e0e0 (gray value 224)
-    lower_e0e0e0 = 220
-    upper_e0e0e0 = 228
+    # Define the HSV range for green color (tuned for green apples and guavas)
+    lower_green = np.array([30, 40, 40])
+    upper_green = np.array([100, 255, 255])
 
-    # Define the intensity range for the color #fafafa (gray value 250)
-    lower_fafafa = 245
-    upper_fafafa = 255
+    # Create a mask for the green color
+    mask_green = cv2.inRange(hsv, lower_green, upper_green)
 
-    # Create masks for the two intensity ranges
-    mask_e0e0e0 = cv2.inRange(gray, lower_e0e0e0, upper_e0e0e0)
-    mask_fafafa = cv2.inRange(gray, lower_fafafa, upper_fafafa)
-
-    # Combine the masks
-    combined_mask = cv2.bitwise_or(mask_e0e0e0, mask_fafafa)
-
-    # Apply morphological operations to smooth the mask
-    kernel = np.ones((5, 5), np.uint8)
-    combined_mask = cv2.morphologyEx(combined_mask, cv2.MORPH_CLOSE, kernel)
-    combined_mask = cv2.morphologyEx(combined_mask, cv2.MORPH_OPEN, kernel)
-
-    # Apply Gaussian blur to further smooth the mask
-    combined_mask = cv2.GaussianBlur(combined_mask, (5, 5), 0)
-
-    # Apply the mask to the original frame
-    result = cv2.bitwise_and(frame, frame, mask=combined_mask)
-
+    # Apply the mask to the original frame to get the green areas
+    result = cv2.bitwise_and(frame, frame, mask=mask_green)
     return result
+
+# Example usage:
+# frame = cv2.imread('path_to_image.jpg')
+# result = segment(frame)
+# cv2.imshow('Segmented Green', result)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
