@@ -15,10 +15,10 @@ model = xgb.Booster()
 model.load_model("xgboost_model2.model")
 
 # Baca video
-video_top = 'output1WRAP.mp4'
+#Kamera atas
 cap = cv2.VideoCapture(4)
 
-video_side = 'output2WRAP.mp4'
+#Kamera Samping
 cap2 = cv2.VideoCapture(2)
 url = 'http://175.45.186.55/cbr/upload2.php'
 
